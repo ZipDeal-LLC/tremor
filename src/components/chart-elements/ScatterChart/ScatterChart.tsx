@@ -74,6 +74,9 @@ export interface ScatterChartProps
   enableLegendSlider?: boolean;
   onValueChange?: (value: EventProps) => void;
   customTooltip?: React.ComponentType<CustomTooltipType>;
+  xAxisProps?: any;
+  yAxisProps?: any;
+  zAxisProps?: any;
   rotateLabelX?: {
     angle: number;
     verticalShift: number;
@@ -132,6 +135,9 @@ const ScatterChart = React.forwardRef<HTMLDivElement, ScatterChartProps>((props,
     minYValue,
     maxYValue,
     allowDecimals = true,
+    xAxisProps = {},
+    yAxisProps = {},
+    zAxisProps = {},
     noDataText,
     onValueChange,
     customTooltip,
@@ -244,6 +250,7 @@ const ScatterChart = React.forwardRef<HTMLDivElement, ScatterChartProps>((props,
                 angle={rotateLabelX?.angle}
                 dy={rotateLabelX?.verticalShift}
                 height={rotateLabelX?.xAxisHeight}
+                {...xAxisProps}
               />
             ) : null}
             {y ? (
@@ -270,6 +277,7 @@ const ScatterChart = React.forwardRef<HTMLDivElement, ScatterChartProps>((props,
                 )}
                 allowDecimals={allowDecimals}
                 allowDataOverflow={true}
+                {...yAxisProps}
               />
             ) : null}
             <Tooltip
@@ -306,7 +314,9 @@ const ScatterChart = React.forwardRef<HTMLDivElement, ScatterChartProps>((props,
                 )
               }
             />
-            {size ? <ZAxis dataKey={size} type="number" range={sizeRange} name={size} /> : null}
+            {size ? (
+              <ZAxis dataKey={size} type="number" range={sizeRange} name={size} {...zAxisProps} />
+            ) : null}
             {categories.map((cat) => {
               return (
                 <Scatter

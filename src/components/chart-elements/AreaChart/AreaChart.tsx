@@ -38,6 +38,7 @@ export interface AreaChartProps extends BaseChartProps {
   stack?: boolean;
   curveType?: CurveType;
   connectNulls?: boolean;
+  legendOverwriteFn?: (s: string) => string;
   showGradient?: boolean;
 }
 
@@ -51,6 +52,7 @@ const AreaChart = React.forwardRef<HTMLDivElement, AreaChartProps>((props, ref) 
     data = [],
     categories = [],
     index,
+    children = undefined,
     stack = false,
     colors = themeColorRange,
     valueFormatter = defaultValueFormatter,
@@ -71,6 +73,10 @@ const AreaChart = React.forwardRef<HTMLDivElement, AreaChartProps>((props, ref) 
     maxValue,
     connectNulls = false,
     allowDecimals = true,
+    tooltipValueFormatter = undefined,
+    legendOverwriteFn = undefined,
+    xAxisProps = {},
+    yAxisProps = {},
     noDataText,
     className,
     onValueChange,
@@ -186,6 +192,7 @@ const AreaChart = React.forwardRef<HTMLDivElement, AreaChartProps>((props, ref) 
               angle={rotateLabelX?.angle}
               dy={rotateLabelX?.verticalShift}
               height={rotateLabelX?.xAxisHeight}
+              {...xAxisProps}
             />
             <YAxis
               width={yAxisWidth}
@@ -207,6 +214,7 @@ const AreaChart = React.forwardRef<HTMLDivElement, AreaChartProps>((props, ref) 
               )}
               tickFormatter={valueFormatter}
               allowDecimals={allowDecimals}
+              {...yAxisProps}
             />
             <Tooltip
               wrapperStyle={{ outline: "none" }}
@@ -229,8 +237,9 @@ const AreaChart = React.forwardRef<HTMLDivElement, AreaChartProps>((props, ref) 
                         active={active}
                         payload={payload}
                         label={label}
-                        valueFormatter={valueFormatter}
+                        valueFormatter={tooltipValueFormatter || valueFormatter}
                         categoryColors={categoryColors}
+                        legendOverwriteFn={legendOverwriteFn}
                       />
                     )
                 ) : (
@@ -253,10 +262,12 @@ const AreaChart = React.forwardRef<HTMLDivElement, AreaChartProps>((props, ref) 
                       ? (clickedLegendItem: string) => onCategoryClick(clickedLegendItem)
                       : undefined,
                     enableLegendSlider,
+                    legendOverwriteFn,
                   )
                 }
               />
             ) : null}
+            {children}
             {categories.map((category) => {
               return (
                 <defs key={category}>
