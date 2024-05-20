@@ -28,6 +28,7 @@ export interface SearchSelectProps extends React.HTMLAttributes<HTMLInputElement
   errorMessage?: string;
   enableClear?: boolean;
   children: React.ReactNode;
+  autoComplete?: string;
 }
 
 const makeSelectClassName = makeClassName("SearchSelect");
@@ -50,9 +51,10 @@ const SearchSelect = React.forwardRef<HTMLInputElement, SearchSelectProps>((prop
     children,
     className,
     id,
+    autoComplete = "off",
     ...other
   } = props;
-  const comboboxButtonRef = useRef<HTMLButtonElement | null>(null);
+  const comboboxInputRef = useRef<HTMLInputElement | null>(null);
 
   const [searchQuery, setSearchQuery] = useInternalState("", searchValue);
   const [selectedValue, setSelectedValue] = useInternalState(defaultValue, value);
@@ -82,12 +84,13 @@ const SearchSelect = React.forwardRef<HTMLInputElement, SearchSelectProps>((prop
       className={tremorTwMerge(
         // common
         "w-full min-w-[10rem] relative text-tremor-default",
+        className,
       )}
     >
       <select
         title="search-select-hidden"
         required={required}
-        className={tremorTwMerge("h-full w-full absolute left-0 top-0 z-0 opacity-0")}
+        className={tremorTwMerge("h-full w-full absolute left-0 top-0 -z-10 opacity-0")}
         value={selectedValue}
         onChange={(e) => {
           e.preventDefault();
@@ -96,8 +99,8 @@ const SearchSelect = React.forwardRef<HTMLInputElement, SearchSelectProps>((prop
         disabled={disabled}
         id={id}
         onFocus={() => {
-          const comboboxButton = comboboxButtonRef.current;
-          if (comboboxButton) comboboxButton.click();
+          const comboboxInput = comboboxInputRef.current;
+          if (comboboxInput) comboboxInput.focus();
         }}
       >
         <option className="hidden" value="" disabled hidden>
@@ -125,17 +128,12 @@ const SearchSelect = React.forwardRef<HTMLInputElement, SearchSelectProps>((prop
           }) as any
         }
         disabled={disabled}
-        className={tremorTwMerge(
-          // common
-          "w-full min-w-[10rem] relative text-tremor-default",
-          className,
-        )}
         id={id}
         {...other}
       >
         {({ value }) => (
           <>
-            <Combobox.Button ref={comboboxButtonRef} className="w-full">
+            <Combobox.Button className="w-full">
               {Icon && (
                 <span
                   className={tremorTwMerge(
@@ -157,6 +155,7 @@ const SearchSelect = React.forwardRef<HTMLInputElement, SearchSelectProps>((prop
               )}
 
               <Combobox.Input
+                ref={comboboxInputRef}
                 className={tremorTwMerge(
                   // common
                   "w-full outline-none text-left whitespace-nowrap truncate rounded-tremor-default focus:ring-2 transition duration-100 text-tremor-default pr-14 border py-2",
@@ -176,6 +175,7 @@ const SearchSelect = React.forwardRef<HTMLInputElement, SearchSelectProps>((prop
                   setSearchQuery(event.target.value);
                 }}
                 displayValue={(value: string) => valueToNameMapping.get(value) ?? ""}
+                autoComplete={autoComplete}
               />
               <div className={tremorTwMerge("absolute inset-y-0 right-0 flex items-center pr-2.5")}>
                 <ArrowDownHeadIcon

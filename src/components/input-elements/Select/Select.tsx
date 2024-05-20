@@ -64,12 +64,13 @@ const Select = React.forwardRef<HTMLInputElement, SelectProps>((props, ref) => {
       className={tremorTwMerge(
         // common
         "w-full min-w-[10rem] relative text-tremor-default",
+        className,
       )}
     >
       <select
         title="select-hidden"
         required={required}
-        className={tremorTwMerge("h-full w-full absolute left-0 top-0 z-0 opacity-0")}
+        className={tremorTwMerge("h-full w-full absolute left-0 top-0 -z-10 opacity-0")}
         value={selectedValue}
         onChange={(e) => {
           e.preventDefault();
@@ -107,11 +108,6 @@ const Select = React.forwardRef<HTMLInputElement, SelectProps>((props, ref) => {
           }) as any
         }
         disabled={disabled}
-        className={tremorTwMerge(
-          // common
-          "w-full min-w-[10rem] relative text-tremor-default",
-          className,
-        )}
         id={id}
         {...other}
       >
