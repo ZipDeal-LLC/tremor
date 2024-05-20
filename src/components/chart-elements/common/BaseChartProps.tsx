@@ -51,6 +51,8 @@ interface BaseChartProps extends BaseAnimationTimingProps, React.HTMLAttributes<
   barProps?: any;
   tooltipValueFormatter?: ValueFormatter;
   tickGap?: number;
+  xAxisLabel?: string;
+  yAxisLabel?: string;
 }
 
 export default BaseChartProps;
