@@ -1,17 +1,24 @@
 "use client";
-import { colorPalette, getColorClassNames, tremorTwMerge } from "lib";
+import {
+  BaseColors,
+  colorPalette,
+  defaultValueFormatter,
+  getColorClassNames,
+  themeColorRange,
+  tremorTwMerge
+} from "lib";
 import React, { useState } from "react";
 
 import {
   Bar,
   BarChart as ReChartsBarChart,
   CartesianGrid,
+  Label,
   Legend,
   ResponsiveContainer,
   Tooltip,
   XAxis,
   YAxis,
-  Label,
 } from "recharts";
 
 import BaseChartProps from "../common/BaseChartProps";
@@ -19,11 +26,9 @@ import ChartLegend from "../common/ChartLegend";
 import ChartTooltip from "../common/ChartTooltip";
 import NoData from "../common/NoData";
 import { constructCategoryColors, deepEqual, getYAxisDomain } from "../common/utils";
-
-import { BaseColors, defaultValueFormatter, themeColorRange } from "lib";
 import { AxisDomain } from "recharts/types/util/types";
 
-const renderShape = (
+const defaultRenderShape = (
   props: any,
   activeBar: any | undefined,
   activeLegend: string | undefined,
@@ -69,6 +74,7 @@ const BarChart = React.forwardRef<HTMLDivElement, BarChartProps>((props, ref) =>
     data = [],
     categories = [],
     index,
+    children = undefined,
     colors = themeColorRange,
     valueFormatter = defaultValueFormatter,
     layout = "horizontal",
@@ -88,6 +94,9 @@ const BarChart = React.forwardRef<HTMLDivElement, BarChartProps>((props, ref) =>
     minValue,
     maxValue,
     allowDecimals = true,
+    xAxisTextAnchor = undefined,
+    margin = undefined,
+    tooltipValueFormatter = undefined,
     noDataText,
     onValueChange,
     enableLegendSlider = false,
@@ -98,6 +107,11 @@ const BarChart = React.forwardRef<HTMLDivElement, BarChartProps>((props, ref) =>
     xAxisLabel,
     yAxisLabel,
     className,
+    renderShape = undefined,
+    xAxisProps = {},
+    yAxisProps = {},
+    gridProps = {},
+    barProps = {},
     ...other
   } = props;
   const CustomTooltip = customTooltip;
@@ -143,10 +157,12 @@ const BarChart = React.forwardRef<HTMLDivElement, BarChartProps>((props, ref) =>
     }
     setActiveBar(undefined);
   }
+
   const yAxisDomain = getYAxisDomain(autoMinValue, minValue, maxValue);
 
   return (
-    <div ref={ref} className={tremorTwMerge("w-full h-80", className)} {...other}>
+    <div ref={ref}
+         className={tremorTwMerge("w-full h-80", className)} {...other}>
       <ResponsiveContainer className="h-full w-full">
         {data?.length ? (
           <ReChartsBarChart
@@ -154,13 +170,14 @@ const BarChart = React.forwardRef<HTMLDivElement, BarChartProps>((props, ref) =>
             data={data}
             stackOffset={stack ? "sign" : relative ? "expand" : "none"}
             layout={layout === "vertical" ? "vertical" : "horizontal"}
+            margin={margin}
             onClick={
               hasOnValueChange && (activeLegend || activeBar)
                 ? () => {
-                    setActiveBar(undefined);
-                    setActiveLegend(undefined);
-                    onValueChange?.(null);
-                  }
+                  setActiveBar(undefined);
+                  setActiveLegend(undefined);
+                  onValueChange?.(null);
+                }
                 : undefined
             }
             margin={{
@@ -182,6 +199,7 @@ const BarChart = React.forwardRef<HTMLDivElement, BarChartProps>((props, ref) =>
                 )}
                 horizontal={layout !== "vertical"}
                 vertical={layout === "vertical"}
+                {...gridProps}
               />
             ) : null}
 
@@ -208,7 +226,9 @@ const BarChart = React.forwardRef<HTMLDivElement, BarChartProps>((props, ref) =>
                 angle={rotateLabelX?.angle}
                 dy={rotateLabelX?.verticalShift}
                 height={rotateLabelX?.xAxisHeight}
+                textAnchor={xAxisTextAnchor}
                 minTickGap={tickGap}
+                {...xAxisProps}
               >
                 {xAxisLabel && (
                   <Label
@@ -244,6 +264,8 @@ const BarChart = React.forwardRef<HTMLDivElement, BarChartProps>((props, ref) =>
                 angle={rotateLabelX?.angle}
                 dy={rotateLabelX?.verticalShift}
                 height={rotateLabelX?.xAxisHeight}
+                textAnchor={xAxisTextAnchor}
+                {...xAxisProps}
               >
                 {xAxisLabel && (
                   <Label
@@ -279,6 +301,7 @@ const BarChart = React.forwardRef<HTMLDivElement, BarChartProps>((props, ref) =>
                   relative ? (value: number) => `${(value * 100).toString()} %` : valueFormatter
                 }
                 allowDecimals={allowDecimals}
+                {...yAxisProps}
               >
                 {yAxisLabel && (
                   <Label
@@ -313,6 +336,7 @@ const BarChart = React.forwardRef<HTMLDivElement, BarChartProps>((props, ref) =>
                   // dark
                   "dark:fill-dark-tremor-content",
                 )}
+                {...yAxisProps}
               >
                 {yAxisLabel && (
                   <Label
@@ -348,7 +372,7 @@ const BarChart = React.forwardRef<HTMLDivElement, BarChartProps>((props, ref) =>
                         active={active}
                         payload={payload}
                         label={label}
-                        valueFormatter={valueFormatter}
+                        valueFormatter={tooltipValueFormatter || valueFormatter}
                         categoryColors={categoryColors}
                       />
                     )
@@ -376,6 +400,7 @@ const BarChart = React.forwardRef<HTMLDivElement, BarChartProps>((props, ref) =>
                 }
               />
             ) : null}
+            {children}
             {categories.map((category) => (
               <Bar
                 className={tremorTwMerge(
@@ -393,8 +418,13 @@ const BarChart = React.forwardRef<HTMLDivElement, BarChartProps>((props, ref) =>
                 fill=""
                 isAnimationActive={showAnimation}
                 animationDuration={animationDuration}
-                shape={(props: any) => renderShape(props, activeBar, activeLegend, layout)}
+                shape={(props: any) =>
+                  renderShape
+                    ? renderShape(props, activeBar, activeLegend, layout)
+                    : defaultRenderShape(props, activeBar, activeLegend, layout)
+                }
                 onClick={onBarClick}
+                {...barProps}
               />
             ))}
           </ReChartsBarChart>

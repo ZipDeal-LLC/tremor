@@ -67,6 +67,11 @@ const LineChart = React.forwardRef<HTMLDivElement, LineChartProps>((props, ref) 
     maxValue,
     connectNulls = false,
     allowDecimals = true,
+    xAxisTextAnchor = undefined,
+    margin = undefined,
+    tooltipValueFormatter = undefined,
+    xAxisProps = {},
+    yAxisProps = {},
     noDataText,
     className,
     onValueChange,
@@ -139,6 +144,7 @@ const LineChart = React.forwardRef<HTMLDivElement, LineChartProps>((props, ref) 
         {data?.length ? (
           <ReChartsLineChart
             data={data}
+            margin={margin}
             onClick={
               hasOnValueChange && (activeLegend || activeDot)
                 ? () => {
@@ -192,6 +198,8 @@ const LineChart = React.forwardRef<HTMLDivElement, LineChartProps>((props, ref) 
               angle={rotateLabelX?.angle}
               dy={rotateLabelX?.verticalShift}
               height={rotateLabelX?.xAxisHeight}
+              textAnchor={xAxisTextAnchor}
+              {...xAxisProps}
             >
               {xAxisLabel && (
                 <Label
@@ -223,6 +231,7 @@ const LineChart = React.forwardRef<HTMLDivElement, LineChartProps>((props, ref) 
               )}
               tickFormatter={valueFormatter}
               allowDecimals={allowDecimals}
+              {...yAxisProps}
             >
               {yAxisLabel && (
                 <Label
@@ -257,7 +266,7 @@ const LineChart = React.forwardRef<HTMLDivElement, LineChartProps>((props, ref) 
                         active={active}
                         payload={payload}
                         label={label}
-                        valueFormatter={valueFormatter}
+                        valueFormatter={tooltipValueFormatter || valueFormatter}
                         categoryColors={categoryColors}
                       />
                     )

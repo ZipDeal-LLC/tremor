@@ -12,6 +12,7 @@ const ChartLegend = (
   activeLegend: string | undefined,
   onClick?: (category: string, color: Color | string) => void,
   enableLegendSlider?: boolean,
+  legendOverwriteFn?: (s: string) => string,
 ) => {
   const legendRef = useRef<HTMLDivElement>(null);
 
@@ -28,7 +29,9 @@ const ChartLegend = (
   return (
     <div ref={legendRef} className="flex items-center justify-end">
       <Legend
-        categories={filteredPayload.map((entry: any) => entry.value)}
+        categories={filteredPayload.map((entry: any) =>
+          legendOverwriteFn ? legendOverwriteFn(entry.value) : entry.value,
+        )}
         colors={filteredPayload.map((entry: any) => categoryColors.get(entry.value))}
         onClickLegendItem={onClick}
         activeLegend={activeLegend}

@@ -1,6 +1,6 @@
 "use client";
 import { BaseColors, defaultValueFormatter, themeColorRange, tremorTwMerge } from "lib";
-import React, { useEffect } from "react";
+import React, { ReactNode, useEffect } from "react";
 import {
   Pie,
   PieChart as ReChartsDonutChart,
@@ -26,8 +26,10 @@ export interface DonutChartProps extends BaseAnimationTimingProps {
   category?: string;
   index?: string;
   colors?: (Color | string)[];
+  children?: ReactNode;
   variant?: DonutChartVariant;
   valueFormatter?: ValueFormatter;
+  tooltipValueFormatter?: ValueFormatter;
   label?: string;
   showLabel?: boolean;
   showAnimation?: boolean;
@@ -36,6 +38,7 @@ export interface DonutChartProps extends BaseAnimationTimingProps {
   className?: string;
   onValueChange?: (value: EventProps) => void;
   customTooltip?: React.ComponentType<CustomTooltipProps>;
+  labelClassname?: string;
 }
 
 const renderInactiveShape = (props: any) => {
@@ -78,9 +81,11 @@ const DonutChart = React.forwardRef<HTMLDivElement, DonutChartProps>((props, ref
     data = [],
     category = "value",
     index = "name",
+    children = undefined,
     colors = themeColorRange,
     variant = "donut",
     valueFormatter = defaultValueFormatter,
+    tooltipValueFormatter = undefined,
     label,
     showLabel = true,
     animationDuration = 900,
@@ -90,6 +95,7 @@ const DonutChart = React.forwardRef<HTMLDivElement, DonutChartProps>((props, ref
     onValueChange,
     customTooltip,
     className,
+    labelClassname,
     ...other
   } = props;
   const CustomTooltip = customTooltip;
@@ -146,6 +152,7 @@ const DonutChart = React.forwardRef<HTMLDivElement, DonutChartProps>((props, ref
                   "fill-tremor-content-emphasis",
                   // dark
                   "dark:fill-dark-tremor-content-emphasis",
+                  labelClassname,
                 )}
                 x="50%"
                 y="50%"
@@ -186,7 +193,7 @@ const DonutChart = React.forwardRef<HTMLDivElement, DonutChartProps>((props, ref
                   <DonutChartTooltip
                     active={active}
                     payload={payload}
-                    valueFormatter={valueFormatter}
+                    valueFormatter={tooltipValueFormatter || valueFormatter}
                   />
             )}
               />
@@ -210,7 +217,7 @@ const DonutChart = React.forwardRef<HTMLDivElement, DonutChartProps>((props, ref
                       <DonutChartTooltip
                         active={active}
                         payload={payload}
-                        valueFormatter={valueFormatter}
+                        valueFormatter={tooltipValueFormatter || valueFormatter}
                       />
                     )
                 ) : (
@@ -218,6 +225,7 @@ const DonutChart = React.forwardRef<HTMLDivElement, DonutChartProps>((props, ref
                 )
               }
             />
+            {children}
           </ReChartsDonutChart>
         ) : (
           <NoData noDataText={noDataText} />

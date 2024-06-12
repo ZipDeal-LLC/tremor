@@ -1,3 +1,4 @@
+import { ReactNode } from "react";
 import { Color, ValueFormatter, IntervalType } from "../../../lib";
 import type BaseAnimationTimingProps from "./BaseAnimationTimingProps";
 import { CustomTooltipProps } from "./CustomTooltipProps";
@@ -29,6 +30,7 @@ interface BaseChartProps extends BaseAnimationTimingProps, React.HTMLAttributes<
   showGridLines?: boolean;
   autoMinValue?: boolean;
   minValue?: number;
+  children?: ReactNode;
   maxValue?: number;
   allowDecimals?: boolean;
   noDataText?: string;
@@ -40,6 +42,14 @@ interface BaseChartProps extends BaseAnimationTimingProps, React.HTMLAttributes<
     verticalShift?: number;
     xAxisHeight?: number;
   };
+  renderShape?: (props: any, activeBar: any | undefined, activeLegend: string | undefined, layout: string | undefined) => any;
+  xAxisTextAnchor?: string;
+  margin?: any;
+  xAxisProps?: any;
+  yAxisProps?: any;
+  gridProps?: any;
+  barProps?: any;
+  tooltipValueFormatter?: ValueFormatter;
   tickGap?: number;
   xAxisLabel?: string;
   yAxisLabel?: string;
